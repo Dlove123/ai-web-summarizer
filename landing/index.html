@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI网页摘要助手 - 一键生成智能摘要</title>
+  <meta name="description" content="AI网页摘要助手是一款免费的Chrome浏览器插件，帮助您一键生成网页内容的智能摘要，支持导出到Notion和飞书文档。">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f7fa;
+    }
+    
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .hero p {
+      font-size: 20px;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    
+    .cta-btn {
+      display: inline-block;
+      background: white;
+      color: #667eea;
+      padding: 16px 40px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    .features {
+      padding: 80px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .features h2 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 60px;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    
+    .feature-card p {
+      color: #666;
+      line-height: 1.8;
+    }
+    
+    .how-it-works {
+      background: white;
+      padding: 80px 20px;
+    }
+    
+    .how-it-works h2 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 60px;
+    }
+    
+    .steps {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .step-content h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    
+    .step-content p {
+      color: #666;
+    }
+    
+    .pricing {
+      padding: 80px 20px;
+      background: #f5f7fa;
+    }
+    
+    .pricing h2 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 60px;
+    }
+    
+    .price-card {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .price-card h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .price {
+      font-size: 56px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 30px;
+    }
+    
+    .price span {
+      font-size: 20px;
+      color: #999;
+    }
+    
+    .price-features {
+      list-style: none;
+      margin-bottom: 40px;
+    }
+    
+    .price-features li {
+      padding: 10px 0;
+      color: #666;
+    }
+    
+    .price-features li::before {
+      content: "✓ ";
+      color: #667eea;
+      font-weight: bold;
+    }
+    
+    footer {
+      background: #2d3748;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    footer p {
+      opacity: 0.8;
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+      
+      .hero p {
+        font-size: 16px;
+      }
+      
+      .step {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>📝 AI网页摘要助手</h1>
+    <p>一键生成网页内容的智能摘要，让信息获取更高效。支持导出到Notion、飞书文档，完全免费。</p>
+    <a href="#" class="cta-btn" onclick="alert('Chrome Web Store审核中，敬请期待！')">立即安装 - 免费</a>
+  </section>
+  
+  <section class="features">
+    <h2>核心功能</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>一键摘要</h3>
+        <p>选中网页任意内容，或使用快捷键 Alt+S，瞬间生成AI智能摘要。支持精简、详细、要点三种模式。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>整页提取</h3>
+        <p>自动识别文章正文，智能过滤广告和无关内容，一键提取整页核心信息。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>多端同步</h3>
+        <p>摘要历史自动保存，支持云端同步。随时随地查看过往摘要记录。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>一键导出</h3>
+        <p>支持导出到Notion、飞书文档，或复制为Markdown格式，无缝衔接你的工作流。</p>
+      </div>
+    </div>
+  </section>
+  
+  <section class="how-it-works">
+    <h2>使用步骤</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>安装插件</h3>
+          <p>从Chrome Web Store一键安装，无需注册账号</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>选中内容</h3>
+          <p>在任意网页选中文字，或点击插件图标提取整页内容</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>生成摘要</h3>
+          <p>选择摘要模式，AI瞬间生成结构化摘要</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>导出使用</h3>
+          <p>一键复制或导出到Notion、飞书，开始高效工作</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="pricing">
+    <h2>完全免费</h2>
+    <div class="price-card">
+      <h3>免费版</h3>
+      <div class="price">¥0<span>/永久</span></div>
+      <ul class="price-features">
+        <li>无限次摘要生成</li>
+        <li>三种摘要模式</li>
+        <li>历史记录保存</li>
+        <li>Notion/飞书导出</li>
+        <li>云端同步</li>
+      </ul>
+      <a href="#" class="cta-btn" onclick="alert('Chrome Web Store审核中，敬请期待！')">免费安装</a>
+    </div>
+  </section>
+  
+  <footer>
+    <p>© 2025 AI网页摘要助手 | 开源免费，让信息获取更高效</p>
+  </footer>
+</body>
+</html>

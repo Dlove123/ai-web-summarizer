@@ -1,0 +1,27 @@
+{
+  "name": "ai-web-summarizer",
+  "version": "1.0.0",
+  "description": "AI网页摘要助手 - Chrome浏览器插件",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev:extension",
+    "dev:extension": "mkdir -p dist && cp -r extension/* dist/",
+    "build": "npm run build:extension && npm run build:worker",
+    "build:extension": "mkdir -p dist && cp -r extension/* dist/ && echo 'Extension built to dist/'",
+    "build:worker": "cd worker && wrangler deploy --dry-run",
+    "deploy:worker": "cd worker && wrangler deploy",
+    "lint": "eslint extension/",
+    "test": "echo \"Tests not implemented yet\""
+  },
+  "keywords": [
+    "chrome-extension",
+    "ai",
+    "summarizer",
+    "productivity"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

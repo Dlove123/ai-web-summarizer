@@ -1,0 +1,47 @@
+name: Deploy AI Summarizer
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+    name: Deploy Cloudflare Worker
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler
+      
+      - name: Deploy Worker
+        working-directory: ./worker
+        run: wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  build-extension:
+    runs-on: ubuntu-latest
+    name: Build Chrome Extension
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Extension Package
+        run: |
+          mkdir -p release
+          zip -r release/ai-summarizer.zip extension/ -x "*.DS_Store"
+          echo "Extension packaged for Chrome Web Store"
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: release/ai-summarizer.zip

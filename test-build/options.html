@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 - AI网页摘要助手</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      color: #666;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group select:focus,
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .form-group small {
+      display: block;
+      margin-top: 6px;
+      color: #999;
+      font-size: 12px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert.success {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .alert.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .api-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    
+    .api-info h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    
+    .api-info ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #666;
+      font-size: 13px;
+    }
+    
+    .api-info li {
+      margin-bottom: 5px;
+    }
+    
+    .api-info a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    
+    .api-info a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚙️ 设置</h1>
+      <p>配置你的AI摘要助手</p>
+    </div>
+    
+    <div class="alert" id="alert"></div>
+    
+    <div class="card">
+      <h2>API配置</h2>
+      
+      <div class="form-group">
+        <label for="apiProvider">AI服务提供商</label>
+        <select id="apiProvider">
+          <option value="qwen">通义千问（推荐，免费额度充足）</option>
+          <option value="deepseek">DeepSeek（需API Key）</option>
+        </select>
+        <small>选择AI服务商，插件直接调用API（纯前端，零成本）</small>
+      </div>
+      
+      <div class="form-group" id="apiKeyGroup" style="display: none;">
+        <label for="apiKey">API密钥</label>
+        <input type="password" id="apiKey" placeholder="输入你的API密钥">
+        <small>密钥仅存储在本地浏览器中</small>
+      </div>
+      
+      <div class="form-group" id="modelGroup" style="display: none;">
+        <label for="model">模型</label>
+        <select id="model">
+          <option value="">默认模型</option>
+        </select>
+      </div>
+      
+      <button class="btn" id="saveBtn">保存设置</button>
+      
+      <div class="api-info">
+        <h3>📋 获取API密钥</h3>
+        <ul id="apiGuide">
+          <li>选择AI服务商，免费额度充足</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>快捷键</h2>
+      <p style="color: #666; margin-bottom: 15px;">当前快捷键：<strong>Alt + S</strong></p>
+      <p style="color: #999; font-size: 13px;">如需修改，请前往 Chrome 扩展程序管理页面</p>
+    </div>
+  </div>
+  
+  <script>
+    const apiProvider = document.getElementById('apiProvider');
+    const apiKeyGroup = document.getElementById('apiKeyGroup');
+    const modelGroup = document.getElementById('modelGroup');
+    const apiGuide = document.getElementById('apiGuide');
+    const modelSelect = document.getElementById('model');
+    
+    const providerInfo = {
+      deepseek: {
+        guide: '<li>访问 <a href="https://platform.deepseek.com" target="_blank">DeepSeek开放平台</a></li><li>注册账号并创建API Key</li><li>复制密钥到上方输入框</li>',
+        models: [
+          { value: 'deepseek-chat', label: 'DeepSeek Chat' },
+          { value: 'deepseek-reasoner', label: 'DeepSeek Reasoner' }
+        ]
+      },
+      qwen: {
+        guide: '<li>访问 <a href="https://dashscope.aliyun.com" target="_blank">阿里云百炼</a></li><li>开通DashScope服务</li><li>创建API Key并复制到上方</li>',
+        models: [
+          { value: 'qwen-turbo', label: '通义千问-Turbo（免费）' },
+          { value: 'qwen-plus', label: '通义千问-Plus' },
+          { value: 'qwen-max', label: '通义千问-Max' }
+        ]
+      }
+    };
+    
+    // 切换提供商
+    apiProvider.addEventListener('change', () => {
+      const provider = apiProvider.value;
+      const info = providerInfo[provider];
+      
+      apiGuide.innerHTML = info.guide;
+      
+      apiKeyGroup.style.display = 'block';
+      modelGroup.style.display = 'block';
+      } else {
+        apiKeyGroup.style.display = 'block';
+        modelGroup.style.display = 'block';
+        
+        // 更新模型选项
+        modelSelect.innerHTML = info.models.map(m => 
+          `<option value="${m.value}">${m.label}</option>`
+        ).join('');
+      }
+    });
+    
+    // 加载保存的设置
+    chrome.storage.sync.get(['apiProvider', 'apiKey', 'model'], (result) => {
+      if (result.apiProvider) {
+        apiProvider.value = result.apiProvider;
+        apiProvider.dispatchEvent(new Event('change'));
+      }
+      if (result.apiKey) {
+        document.getElementById('apiKey').value = result.apiKey;
+      }
+      if (result.model) {
+        modelSelect.value = result.model;
+      }
+    });
+    
+    // 保存设置
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const settings = {
+        apiProvider: apiProvider.value,
+        apiKey: document.getElementById('apiKey').value,
+        model: modelSelect.value
+      };
+      
+      chrome.storage.sync.set(settings, () => {
+        showAlert('设置已保存！', 'success');
+      });
+    });
+    
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert ${type}`;
+      setTimeout(() => alert.className = 'alert', 3000);
+    }
+  </script>
+</body>
+</html>

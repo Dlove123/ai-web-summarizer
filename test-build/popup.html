@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI网页摘要助手</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .mode-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    
+    .mode-btn:hover, .mode-btn.active {
+      background: rgba(255,255,255,0.3);
+      border-color: #fff;
+    }
+    
+    .input-area {
+      margin-bottom: 15px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #fff;
+      color: #667eea;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    
+    .output-area {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 15px;
+      min-height: 100px;
+      color: #333;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .output-area.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .export-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    
+    .export-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: transparent;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.3s;
+    }
+    
+    .export-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .settings {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .settings-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .settings-link:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📝 AI网页摘要助手</h1>
+    <p>选中文字，一键生成智能摘要</p>
+  </div>
+  
+  <div class="content">
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="brief">精简</button>
+      <button class="mode-btn" data-mode="detailed">详细</button>
+      <button class="mode-btn" data-mode="bullet">要点</button>
+    </div>
+    
+    <div class="input-area">
+      <textarea id="inputText" placeholder="在此粘贴或输入要摘要的内容...
+
+快捷键：Alt+S 快速打开"></textarea>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-secondary" id="extractBtn">📄 提取页面</button>
+      <button class="btn btn-primary" id="summarizeBtn">✨ 生成摘要</button>
+    </div>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>AI正在生成摘要...</p>
+    </div>
+    
+    <div class="output-area empty" id="output">
+      摘要将显示在这里
+    </div>
+    
+    <div class="export-btns" id="exportBtns" style="display: none;">
+      <button class="export-btn" data-export="copy">📋 复制</button>
+      <button class="export-btn" data-export="notion">📝 Notion</button>
+      <button class="export-btn" data-export="feishu">📎 飞书</button>
+    </div>
+  </div>
+  
+  <div class="settings">
+    <a href="#" class="settings-link" id="settingsLink">⚙️ 设置API密钥</a>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
